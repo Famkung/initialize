@@ -1,27 +1,41 @@
 {
   "name": "fullstack-initializer",
   "version": "1.0.0",
-  "description": "Fullstack Initializer Skill - Create production-ready full-stack apps via npx",
-  "main": "bin/cli.js",
+  "description": "AI Skill for initializing production-ready Fullstack Applications (React + Vite + Express + TypeScript)",
+  "main": "SKILL.md",
   "bin": {
-    "fullstack-initializer": "./bin/cli.js"
+    "fullstack-initializer": "./bin/cli.js",
+    "fullstack-init": "./bin/cli.js"
   },
-  "files": [
-    "bin/",
-    "skills/"
-  ],
   "scripts": {
+    "start": "node bin/cli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "antigravity",
-    "gemini",
-    "skills",
-    "cli"
+    "ai-skill",
+    "agent-skill",
+    "fullstack",
+    "express",
+    "react",
+    "vite",
+    "typescript",
+    "mui",
+    "jwt",
+    "docker"
   ],
-  "author": "",
+  "author": "FamDev",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Famkung/initialize.git"
+  },
   "engines": {
     "node": ">=14.0.0"
-  }
+  },
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "bin/",
+    "skills/"
+  ]
 }
