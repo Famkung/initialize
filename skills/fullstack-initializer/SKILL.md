@@ -126,14 +126,113 @@ Select option [1-2]:
 - Single choice
 - Default: `1`
 
-### Step 3: Summarize and Confirm
+### Step 3: Show Tech Stack and Project Structure
 
-After all questions, present a summary:
+After all questions, **FIRST** present the tech stack and project structure:
 
 ```
-═══════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════
+                      TECH STACK
+════════════════════════════════════════════════════════════
+
+🖥️  Frontend:
+   • React 18 + TypeScript
+   • Vite (Build tool)
+   • MUI (Material-UI) - Component library
+   • React Router Dom - Routing
+   • Axios - HTTP client
+   • React Hook Form + Zod - Form validation
+
+⚙️  Backend:
+   • Node.js + Express + TypeScript
+   • JWT (JSON Web Tokens) - Authentication
+   • Helmet - Security headers
+   • CORS - Cross-origin resource sharing
+   • Express Rate Limit - API rate limiting
+   • Winston - Structured logging
+   • Swagger UI - API documentation
+
+🗄️  Database:
+   • [SQLite/PostgreSQL/MySQL/MongoDB]
+   • Sequelize ORM (or Mongoose for MongoDB)
+   • Sequelize CLI - Database migrations
+
+🧪  Testing:
+   • Jest + Supertest (Backend)
+   • Vitest + React Testing Library (Frontend)
+
+📦  DevOps:
+   • Docker + docker-compose
+   • GitHub Actions CI/CD
+   • ESLint + Prettier
+
+════════════════════════════════════════════════════════════
+                   PROJECT STRUCTURE
+════════════════════════════════════════════════════════════
+
+[project-name]/
+│
+├── 📂 backend/
+│   ├── 📂 src/
+│   │   ├── 📂 config/         # Database, env config
+│   │   │   └── database.ts
+│   │   ├── 📂 middlewares/     # Auth, validation, error handler
+│   │   │   ├── auth.ts
+│   │   │   ├── validate.ts
+│   │   │   └── errorHandler.ts
+│   │   ├── 📂 models/         # Sequelize models
+│   │   │   ├── index.ts
+│   │   │   └── user.ts
+│   │   ├── 📂 routes/         # API routes
+│   │   │   ├── auth.ts
+│   │   │   └── users.ts
+│   │   ├── 📂 utils/          # Helpers, logger, JWT
+│   │   │   ├── hash.ts
+│   │   │   ├── jwt.ts
+│   │   │   ├── logger.ts
+│   │   │   └── response.ts
+│   │   └── index.ts           # Entry point
+│   ├── 📂 tests/
+│   │   └── auth.test.ts
+│   ├── 📂 migrations/
+│   ├── 📂 seeders/
+│   ├── .env.example
+│   ├── .sequelizerc
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── 📂 frontend/
+│   ├── 📂 src/
+│   │   ├── 📂 api/            # Axios client
+│   │   │   └── client.ts
+│   │   ├── 📂 components/     # Reusable components
+│   │   ├── 📂 context/        # React Context (Auth)
+│   │   │   └── AuthContext.tsx
+│   │   ├── 📂 pages/          # Page components
+│   │   │   ├── Login.tsx
+│   │   │   ├── Dashboard.tsx
+│   │   │   └── NotFound.tsx
+│   │   ├── 📂 theme/          # MUI theme config
+│   │   │   └── theme.ts
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tsconfig.json
+│
+├── 📂 .github/
+│   └── 📂 workflows/
+│       └── ci.yml
+│
+├── 🐳 Dockerfile
+├── 🐳 docker-compose.yml
+├── 📄 .gitignore
+├── 📄 README.md
+└── 📄 package.json (root - scripts)
+
+════════════════════════════════════════════════════════════
                     PROJECT SUMMARY
-═══════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════
 
 📁 Project: [project-name]
 📝 Description: [description]
@@ -147,8 +246,14 @@ After all questions, present a summary:
   • [feature 2]
   • [feature 3]
 
-═══════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════
+```
 
+### Step 4: Ask for Confirmation
+
+After showing the tech stack and structure, ask for confirmation:
+
+```
 Do you want to proceed with this configuration?
   [1] Yes, generate the project
   [2] No, let me change something
@@ -156,12 +261,12 @@ Do you want to proceed with this configuration?
 Select option [1-2]:
 ```
 
-### Step 4: Proceed or Adjust
+### Step 5: Proceed or Adjust
 
 - If user selects `1` → Proceed to architecture proposal
 - If user selects `2` → Ask which question to change
 
-### Step 5: Present Architecture Proposal
+### Step 6: Present Architecture Proposal
 
 Before writing code, present the full architecture:
 
@@ -262,7 +367,7 @@ Does this architecture look good?
 Select option [1-2]:
 ```
 
-### Step 6: Generate Project
+### Step 7: Generate Project
 
 Only after user confirms, proceed to generate all files.
 
