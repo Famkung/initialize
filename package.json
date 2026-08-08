@@ -1,0 +1,23 @@
+{
+  "name": "install-fullstack-initializer",
+  "version": "1.0.0",
+  "description": "Install Antigravity Fullstack Initializer Skill via npx",
+  "main": "bin/cli.js",
+  "bin": {
+    "install-fullstack-initializer": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "antigravity",
+    "gemini",
+    "skills",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
