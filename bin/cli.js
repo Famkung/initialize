@@ -2,9 +2,35 @@
 
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 const readline = require('readline');
 const { execSync } = require('child_process');
+
+// Handle --help flag
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log(`
+  Fullstack Initializer - Create production-ready full-stack applications
+
+  Usage:
+    npx fullstack-initializer [project-name] [options]
+
+  Options:
+    --help, -h       Show this help message
+    --version, -v    Show version number
+    --yes, -y        Skip prompts and use defaults
+
+  Examples:
+    npx fullstack-initializer my-app
+    npx fullstack-initializer my-app --yes
+  `);
+  process.exit(0);
+}
+
+// Handle --version flag
+if (process.argv.includes('--version') || process.argv.includes('-v')) {
+  const pkg = require('../package.json');
+  console.log(pkg.version);
+  process.exit(0);
+}
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -32,25 +58,39 @@ function copyFolderSync(from, to) {
 async function main() {
   console.log(`
 =========================================
- 🚀 Antigravity Full-Stack Initializer
+ 🚀 Fullstack Initializer
 =========================================
 Let's gather some details about your new project to customize the setup.
 `);
 
-  // 1. Ask for repository name
-  let repoName = await askQuestion('📁 Enter project/repository name (default: my-fullstack-app): ');
+  // Check for --yes flag (use defaults)
+  const useDefaults = process.argv.includes('--yes') || process.argv.includes('-y');
+  
+  // Get project name from args or prompt
+  let repoName = process.argv[2] || '';
+  if (!repoName && !useDefaults) {
+    repoName = await askQuestion('📁 Enter project/repository name (default: my-fullstack-app): ');
+  }
   repoName = repoName.trim() || 'my-fullstack-app';
 
   // 2. Ask what the system does
-  console.log('\n📝 Describe what your system does (e.g., "E-commerce platform with cart and checkout", "Task manager with workspaces"):');
-  const projectDesc = await askQuestion('> ');
+  let projectDesc = '';
+  if (!useDefaults) {
+    console.log('\n📝 Describe what your system does (e.g., "E-commerce platform with cart and checkout", "Task manager with workspaces"):');
+    projectDesc = await askQuestion('> ');
+  }
 
   // 3. Ask about design styles
-  console.log('\n🎨 What is your preferred frontend design style/theme? (e.g., "Sleek Dark Mode with Indigo accent", "Minimalist Light theme with green accent"):');
-  const designStyle = await askQuestion('> ');
+  let designStyle = '';
+  if (!useDefaults) {
+    console.log('\n🎨 What is your preferred frontend design style/theme? (e.g., "Sleek Dark Mode with Indigo accent", "Minimalist Light theme with green accent"):');
+    designStyle = await askQuestion('> ');
+  }
 
   // 4. Select Database
-  console.log(`
+  let dbSelected = 'sqlite';
+  if (!useDefaults) {
+    console.log(`
 📊 Choose a Database:
   [1] SQLite (No installation required - recommended for quick starts)
   [2] PostgreSQL
@@ -58,12 +98,12 @@ Let's gather some details about your new project to customize the setup.
   [4] MS SQL Server
   [5] MongoDB (NoSQL)
 `);
-  const dbChoice = await askQuestion('Select option [1-5]: ');
-  let dbSelected = 'sqlite';
-  if (dbChoice === '2') dbSelected = 'postgres';
-  else if (dbChoice === '3') dbSelected = 'mysql';
-  else if (dbChoice === '4') dbSelected = 'mssql';
-  else if (dbChoice === '5') dbSelected = 'mongodb';
+    const dbChoice = await askQuestion('Select option [1-5]: ');
+    if (dbChoice === '2') dbSelected = 'postgres';
+    else if (dbChoice === '3') dbSelected = 'mysql';
+    else if (dbChoice === '4') dbSelected = 'mssql';
+    else if (dbChoice === '5') dbSelected = 'mongodb';
+  }
 
   rl.close();
 

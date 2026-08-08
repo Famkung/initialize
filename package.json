@@ -1,11 +1,15 @@
 {
-  "name": "install-fullstack-initializer",
+  "name": "fullstack-initializer",
   "version": "1.0.0",
-  "description": "Install Antigravity Fullstack Initializer Skill via npx",
+  "description": "Fullstack Initializer Skill - Create production-ready full-stack apps via npx",
   "main": "bin/cli.js",
   "bin": {
-    "install-fullstack-initializer": "./bin/cli.js"
+    "fullstack-initializer": "./bin/cli.js"
   },
+  "files": [
+    "bin/",
+    "skills/"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
