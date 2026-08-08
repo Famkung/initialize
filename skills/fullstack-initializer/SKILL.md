@@ -7,29 +7,264 @@ description: Guides the agent to initialize a custom full-stack project (Node.js
 
 Use this skill when the user requests to create, bootstrap, or update a full-stack repository matching this architecture.
 
-## 📋 1. PRE-CODING PROPOSAL PROTOCOL (CRITICAL)
+## 📋 1. INTERACTIVE REQUIREMENTS GATHERING
 
-When you (the AI Agent) are activated in a workspace containing this skill:
+When you (the AI Agent) are activated in a workspace containing this skill, you MUST conduct an interactive Q&A session with the user. **NEVER generate code immediately.**
 
-1. **Check for Project Specifications:**
-   Look for the file `.agents/project-spec.json` in the root directory. If present, read its contents. It contains:
-   - `projectName`: The name of the project.
-   - `description`: The project functionality/goals.
-   - `designStyle`: The target look-and-feel (colors, dark/light, fonts).
-   - `database`: Selected database.
+### Step 1: Greet and Start Interview
 
-2. **Conduct the Design & API Interview:**
-   Before generating any files, present an analysis to the user containing:
-   - **System Architecture Summary:** Confirming technology choice (e.g. Express TS + React Vite + MUI + chosen DB).
-   - **Proposed Database Schema/Models:** Suggesting tables (e.g. `Users`, `Products`, `Orders`) and their relations.
-   - **Proposed Backend API Endpoints:** A structured table displaying:
-     | Method | Endpoint Path | Description | Protected (JWT) | Zod Validated |
-     |---|---|---|---|---|
-   - **Proposed Frontend Pages & Components:** Defining layout structure and theme integration.
-   - **Design Style Strategy:** Proposing how to implement the styling requested in `designStyle`.
+Start with a friendly greeting and explain the process:
 
-3. **Get User Confirmation:**
-   Ask the user to review the proposal. **Do not write code** until the user confirms or adjusts the proposed design and API list.
+```
+Hello! I'm your Full-Stack Project Initializer. 🚀
+
+I'll help you create a production-ready full-stack application.
+Let me ask you a few questions to understand your project better.
+
+Type your answer after each question, or press Enter for default options.
+```
+
+### Step 2: Ask Questions One by One
+
+**Ask each question separately and wait for user response before moving to the next question.**
+
+#### Question 1: Project Name
+```
+📁 What is your project name? (e.g., my-app, ecommerce-api)
+> 
+```
+- Text input
+- Default: `my-fullstack-app`
+
+#### Question 2: Project Description
+```
+📝 What does this project do? (e.g., "E-commerce platform with cart and checkout", "Task manager with workspaces")
+> 
+```
+- Text input
+- Required
+
+#### Question 3: Project Type
+```
+🏢 What type of project is this?
+  [1] Web Application
+  [2] API Backend
+  [3] Internal Tool
+  [4] SaaS Platform
+  [5] Other
+
+Select option [1-5]:
+```
+- Single choice
+- Default: `1`
+
+#### Question 4: Database Selection
+```
+🗄️ Choose a database:
+  [1] SQLite (No installation required - recommended for quick starts)
+  [2] PostgreSQL (Production-ready)
+  [3] MySQL (Production-ready)
+  [4] MongoDB (NoSQL)
+
+Select option [1-4]:
+```
+- Single choice
+- Default: `1`
+
+#### Question 5: Frontend Style
+```
+🎨 What frontend design style do you prefer?
+  [1] Dark Mode (Modern, sleek)
+  [2] Light Mode (Clean, professional)
+  [3] Both (with theme toggle)
+
+Select option [1-3]:
+```
+- Single choice
+- Default: `1`
+
+#### Question 6: Color Scheme
+```
+🎨 Choose a primary color scheme:
+  [1] Indigo (Default - modern, professional)
+  [2] Blue (Classic, trustworthy)
+  [3] Green (Fresh, natural)
+  [4] Purple (Creative, premium)
+  [5] Red (Bold, energetic)
+
+Select option [1-5]:
+```
+- Single choice
+- Default: `1`
+
+#### Question 7: Core Features
+```
+⚡ Select core features to include (comma-separated numbers):
+  [1] JWT Authentication
+  [2] User Management (CRUD)
+  [3] Role-Based Access Control
+  [4] File Upload
+  [5] Email Service
+  [6] Real-time (Socket.IO)
+  [7] Redis Cache
+  [8] Swagger API Docs
+
+Example: 1,2,3,8
+> 
+```
+- Multiple choice (comma-separated)
+- Default: `1,2,8`
+
+#### Question 8: Docker Support
+```
+🐳 Do you want Docker configuration?
+  [1] Yes (docker-compose.yml + Dockerfile)
+  [2] No
+
+Select option [1-2]:
+```
+- Single choice
+- Default: `1`
+
+### Step 3: Summarize and Confirm
+
+After all questions, present a summary:
+
+```
+═══════════════════════════════════════════════════════════
+                    PROJECT SUMMARY
+═══════════════════════════════════════════════════════════
+
+📁 Project: [project-name]
+📝 Description: [description]
+🏢 Type: [project-type]
+🗄️ Database: [database]
+🎨 Theme: [theme] with [color] accent
+🐳 Docker: [yes/no]
+
+📦 Features:
+  • [feature 1]
+  • [feature 2]
+  • [feature 3]
+
+═══════════════════════════════════════════════════════════
+
+Do you want to proceed with this configuration?
+  [1] Yes, generate the project
+  [2] No, let me change something
+
+Select option [1-2]:
+```
+
+### Step 4: Proceed or Adjust
+
+- If user selects `1` → Proceed to architecture proposal
+- If user selects `2` → Ask which question to change
+
+### Step 5: Present Architecture Proposal
+
+Before writing code, present the full architecture:
+
+```
+═══════════════════════════════════════════════════════════
+                 ARCHITECTURE PROPOSAL
+═══════════════════════════════════════════════════════════
+
+## System Architecture
+
+┌─────────────────────────────────────────────────────────┐
+│                      BROWSER                            │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                 EXPRESS SERVER (5000)                   │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
+│  │   Helmet    │  │    CORS     │  │ Rate Limit  │    │
+│  └─────────────┘  └─────────────┘  └─────────────┘    │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │              JWT Authentication                 │   │
+│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │           Swagger API Documentation             │   │
+│  └─────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│              [DATABASE] (Sequelize ORM)                │
+└─────────────────────────────────────────────────────────┘
+
+## Database Schema
+
+┌─────────────────────────────────────────────────────────┐
+│                         users                           │
+├─────────────────────────────────────────────────────────┤
+│ id            │ INTEGER PRIMARY KEY AUTO_INCREMENT      │
+│ email         │ STRING UNIQUE NOT NULL                  │
+│ password      │ STRING NOT NULL                         │
+│ createdAt     │ DATETIME                                │
+│ updatedAt     │ DATETIME                                │
+└─────────────────────────────────────────────────────────┘
+
+## API Endpoints
+
+| Method | Endpoint          | Description           | Protected | Validated |
+|--------|-------------------|-----------------------|-----------|-----------|
+| POST   | /api/auth/register| Register new user     | No        | Yes       |
+| POST   | /api/auth/login   | Login user            | No        | Yes       |
+| GET    | /api/users/profile| Get user profile      | Yes       | No        |
+[additional endpoints based on features...]
+
+## Frontend Pages
+
+| Page          | Path      | Description              |
+|---------------|-----------|--------------------------|
+| Login         | /login    | User login page          |
+| Dashboard     | /         | Main dashboard           |
+| Profile       | /profile  | User profile page        |
+| 404           | *         | Not found page           |
+
+## Project Structure
+
+project-name/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── middlewares/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── utils/
+│   │   └── index.ts
+│   ├── tests/
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── theme/
+│   │   └── App.tsx
+│   ├── package.json
+│   └── vite.config.ts
+├── docker-compose.yml
+├── Dockerfile
+└── package.json (root)
+
+═══════════════════════════════════════════════════════════
+
+Does this architecture look good?
+  [1] Yes, generate the project
+  [2] No, I want to make changes
+
+Select option [1-2]:
+```
+
+### Step 6: Generate Project
+
+Only after user confirms, proceed to generate all files.
 
 ---
 
