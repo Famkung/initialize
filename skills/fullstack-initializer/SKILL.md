@@ -401,7 +401,28 @@ If build fails:
 - Verify all imports are correct
 - Fix any missing dependencies
 
-#### 8.3 Run Dev Server (Optional but Recommended)
+#### 8.3 Verify Frontend Embed
+
+After both builds complete, verify the frontend is correctly embedded in backend:
+
+```bash
+# Check that frontend build output exists in backend/public/
+ls -la backend/public/
+```
+
+Expected files in `backend/public/`:
+- `index.html`
+- `assets/` folder with JS/CSS bundles
+
+If `backend/public/` is empty or missing, the Vite config is wrong. Fix the `outDir` path in `frontend/vite.config.ts`:
+```typescript
+build: {
+  outDir: path.resolve(__dirname, '../backend/public'),
+  emptyOutDir: true,
+}
+```
+
+#### 8.4 Run Dev Server (Optional but Recommended)
 
 ```bash
 # Terminal 1 - Backend
@@ -417,8 +438,9 @@ Verify:
 - Backend starts on port 5000 without errors
 - Frontend starts on port 3000 without errors
 - Frontend can proxy API requests to backend
+- Access `http://localhost:5000` serves the frontend (after building frontend)
 
-#### 8.4 Show Final Success Message
+#### 8.5 Show Final Success Message
 
 Only after all builds pass, show:
 
@@ -435,14 +457,18 @@ Only after all builds pass, show:
   Backend:
     cd backend
     cp .env.example .env   # Configure your env vars
-    npm run dev             # Start dev server
+    npm run build           # Build frontend into backend/public
+    npm run dev             # Start backend server
 
-  Frontend:
-    cd frontend
-    npm run dev             # Start dev server
+  Production:
+    cd backend
+    npm run build           # Build everything
+    npm start               # Run production server
 
 📖 API Docs: http://localhost:5000/api-docs
-🌐 Frontend: http://localhost:3000
+🌐 App: http://localhost:5000 (after build)
+
+💡 Frontend is embedded in backend - single server deployment!
 
 ════════════════════════════════════════════════════════════
 ```
