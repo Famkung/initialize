@@ -482,6 +482,10 @@ If user selected Docker support in Question 8, run container verification:
 #### 9.1 Build and Run Container
 
 ```bash
+# Stop and remove old container (if exists)
+docker-compose down --remove-orphans
+
+# Build and run new container
 docker-compose up --build -d
 ```
 
@@ -522,10 +526,11 @@ docker-compose down
 
 🐳 Docker Commands:
 
-  docker-compose up --build -d    # Build & run
-  docker-compose down             # Stop
-  docker-compose logs -f app      # View logs
-  docker-compose ps               # Check status
+  docker-compose down --remove-orphans  # Stop & remove old
+  docker-compose up --build -d          # Build & run
+  docker-compose down                   # Stop
+  docker-compose logs -f app            # View logs
+  docker-compose ps                     # Check status
 
 📖 API Docs: http://localhost:5000/api-docs
 🌐 App: http://localhost:5000
