@@ -475,6 +475,64 @@ Only after all builds pass, show:
 
 **IMPORTANT:** If build verification fails, DO NOT mark the skill as done. Fix the errors first, then re-run verification.
 
+### Step 9: Verify Container Deployment (If Docker enabled)
+
+If user selected Docker support in Question 8, run container verification:
+
+#### 9.1 Build and Run Container
+
+```bash
+docker-compose up --build -d
+```
+
+#### 9.2 Verify Container Status
+
+```bash
+docker-compose ps
+docker-compose logs app
+```
+
+Verify:
+- Container is running (status: Up)
+- No errors in logs
+- Backend started successfully on port 5000
+
+#### 9.3 Test Container Endpoints
+
+```bash
+# Health check
+curl http://localhost:5000/api-docs
+
+# Frontend (should return HTML)
+curl http://localhost:5000
+```
+
+#### 9.4 Stop Container
+
+```bash
+docker-compose down
+```
+
+#### 9.5 Show Docker Success Message
+
+```
+════════════════════════════════════════════════════════════
+✅ DOCKER CONTAINER VERIFIED SUCCESSFULLY!
+════════════════════════════════════════════════════════════
+
+🐳 Docker Commands:
+
+  docker-compose up --build -d    # Build & run
+  docker-compose down             # Stop
+  docker-compose logs -f app      # View logs
+  docker-compose ps               # Check status
+
+📖 API Docs: http://localhost:5000/api-docs
+🌐 App: http://localhost:5000
+
+════════════════════════════════════════════════════════════
+```
+
 ---
 
 ## 🛠️ 2. TECH STACK OVERVIEW
