@@ -5,32 +5,7 @@ const path = require('path');
 const readline = require('readline');
 const { execSync } = require('child_process');
 
-// Handle --help flag
-if (process.argv.includes('--help') || process.argv.includes('-h')) {
-  console.log(`
-  Fullstack Initializer - Create production-ready full-stack applications
-
-  Usage:
-    npx fullstack-initializer [project-name] [options]
-
-  Options:
-    --help, -h       Show this help message
-    --version, -v    Show version number
-    --yes, -y        Skip prompts and use defaults
-
-  Examples:
-    npx fullstack-initializer my-app
-    npx fullstack-initializer my-app --yes
-  `);
-  process.exit(0);
-}
-
-// Handle --version flag
-if (process.argv.includes('--version') || process.argv.includes('-v')) {
-  const pkg = require('../package.json');
-  console.log(pkg.version);
-  process.exit(0);
-}
+const SKILLS_DIR = path.join(__dirname, '..', 'skills');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -39,7 +14,89 @@ const rl = readline.createInterface({
 
 const askQuestion = (query) => new Promise((resolve) => rl.question(query, resolve));
 
-// Helper to recursively copy directories
+function getSkills() {
+  if (!fs.existsSync(SKILLS_DIR)) return [];
+  return fs.readdirSync(SKILLS_DIR).filter(file => {
+    const skillPath = path.join(SKILLS_DIR, file);
+    return fs.statSync(skillPath).isDirectory() && 
+           fs.existsSync(path.join(skillPath, 'SKILL.md'));
+  });
+}
+
+function getSkillInfo(skillName) {
+  const skillPath = path.join(SKILLS_DIR, skillName, 'SKILL.md');
+  if (!fs.existsSync(skillPath)) return null;
+  
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  
+  if (!frontmatterMatch) return { name: skillName, description: 'No description available' };
+  
+  const frontmatter = frontmatterMatch[1];
+  const nameMatch = frontmatter.match(/name:\s*(.+)/);
+  const descMatch = frontmatter.match(/description:\s*(.+)/);
+  
+  return {
+    name: nameMatch ? nameMatch[1].trim() : skillName,
+    description: descMatch ? descMatch[1].trim() : 'No description available',
+    path: skillPath
+  };
+}
+
+function listSkills() {
+  const skills = getSkills();
+  
+  if (skills.length === 0) {
+    console.log('\n📭 No skills found in this repository.\n');
+    return;
+  }
+  
+  console.log('\n📦 Available Skills:\n');
+  console.log('─'.repeat(50));
+  
+  skills.forEach((skill, index) => {
+    const info = getSkillInfo(skill);
+    console.log(`${index + 1}. ${info.name}`);
+    console.log(`   ${info.description.substring(0, 60)}${info.description.length > 60 ? '...' : ''}`);
+    console.log('');
+  });
+  
+  console.log('─'.repeat(50));
+  console.log(`Total: ${skills.length} skill(s)\n`);
+}
+
+function showSkillInfo(skillName) {
+  const info = getSkillInfo(skillName);
+  
+  if (!info) {
+    console.log(`\n❌ Skill "${skillName}" not found.\n`);
+    return;
+  }
+  
+  console.log('\n' + '═'.repeat(50));
+  console.log(`📋 Skill: ${info.name}`);
+  console.log('═'.repeat(50));
+  console.log(`\n📝 Description:\n${info.description}`);
+  console.log(`\n📁 Location: ${info.path}`);
+  console.log('═'.repeat(50) + '\n');
+}
+
+async function installSkill(skillName, targetDir) {
+  const skillPath = path.join(SKILLS_DIR, skillName);
+  
+  if (!fs.existsSync(skillPath)) {
+    console.log(`\n❌ Skill "${skillName}" not found.\n`);
+    return;
+  }
+  
+  const targetSkillsDir = path.join(targetDir, '.agents', 'skills');
+  fs.mkdirSync(targetSkillsDir, { recursive: true });
+  
+  copyFolderSync(skillPath, path.join(targetSkillsDir, skillName));
+  
+  console.log(`\n✅ Skill "${skillName}" installed to: ${targetSkillsDir}/${skillName}\n`);
+}
+
 function copyFolderSync(from, to) {
   if (!fs.existsSync(to)) {
     fs.mkdirSync(to, { recursive: true });
@@ -55,175 +112,67 @@ function copyFolderSync(from, to) {
   });
 }
 
-async function main() {
+function showHelp() {
   console.log(`
-=========================================
- 🚀 Fullstack Initializer
-=========================================
-Let's gather some details about your new project to customize the setup.
-`);
+╔═══════════════════════════════════════════════════════════╗
+║           🚀 Skills Manager - FamDev Initialize          ║
+╚═══════════════════════════════════════════════════════════╝
 
-  // Check for --yes flag (use defaults)
-  const useDefaults = process.argv.includes('--yes') || process.argv.includes('-y');
+Usage:
+  npx skills-manager <command> [options]
+
+Commands:
+  list                    List all available skills
+  info <skill-name>       Show detailed info about a skill
+  install <skill-name>    Install a skill to current directory
+  help                    Show this help message
+
+Examples:
+  npx skills-manager list
+  npx skills-manager info fullstack-initializer
+  npx skills-manager install fullstack-initializer
+
+`);
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  const command = args[0];
   
-  // Get project name from args or prompt
-  let repoName = process.argv[2] || '';
-  if (!repoName && !useDefaults) {
-    repoName = await askQuestion('📁 Enter project/repository name (default: my-fullstack-app): ');
+  if (!command || command === 'help' || command === '--help' || command === '-h') {
+    showHelp();
+    rl.close();
+    return;
   }
-  repoName = repoName.trim() || 'my-fullstack-app';
-
-  // 2. Ask what the system does
-  let projectDesc = '';
-  if (!useDefaults) {
-    console.log('\n📝 Describe what your system does (e.g., "E-commerce platform with cart and checkout", "Task manager with workspaces"):');
-    projectDesc = await askQuestion('> ');
-  }
-
-  // 3. Ask about design styles
-  let designStyle = '';
-  if (!useDefaults) {
-    console.log('\n🎨 What is your preferred frontend design style/theme? (e.g., "Sleek Dark Mode with Indigo accent", "Minimalist Light theme with green accent"):');
-    designStyle = await askQuestion('> ');
-  }
-
-  // 4. Select Database
-  let dbSelected = 'sqlite';
-  if (!useDefaults) {
-    console.log(`
-📊 Choose a Database:
-  [1] SQLite (No installation required - recommended for quick starts)
-  [2] PostgreSQL
-  [3] MySQL
-  [4] MS SQL Server
-  [5] MongoDB (NoSQL)
-`);
-    const dbChoice = await askQuestion('Select option [1-5]: ');
-    if (dbChoice === '2') dbSelected = 'postgres';
-    else if (dbChoice === '3') dbSelected = 'mysql';
-    else if (dbChoice === '4') dbSelected = 'mssql';
-    else if (dbChoice === '5') dbSelected = 'mongodb';
-  }
-
-  rl.close();
-
-  // Create installation directories
-  const targetParentDir = path.join(process.cwd(), repoName);
-  const targetAgentSkillsDir = path.join(targetParentDir, '.agents', 'skills');
-  const skillName = 'fullstack-initializer';
-
-  console.log(`\n📦 Creating project workspace in: ${targetParentDir}...`);
-  fs.mkdirSync(targetParentDir, { recursive: true });
-  fs.mkdirSync(targetAgentSkillsDir, { recursive: true });
-
-  // Resolve source skill folder
-  const sourceDir = path.join(__dirname, '..', 'skills', skillName);
-
-  try {
-    // Copy skill files into the new repository so the local AI knows about it
-    copyFolderSync(sourceDir, path.join(targetAgentSkillsDir, skillName));
-
-    // Save project specs so the AI Agent can read them immediately
-    const spec = {
-      projectName: repoName,
-      description: projectDesc || 'Fullstack React + Express App',
-      designStyle: designStyle || 'Sleek Dark Mode with Indigo accent',
-      database: dbSelected,
-      timestamp: new Date().toISOString()
-    };
-
-    fs.writeFileSync(
-      path.join(targetParentDir, '.agents', 'project-spec.json'),
-      JSON.stringify(spec, null, 2)
-    );
-
-    // Create Root package.json for monorepo-like commands
-    const rootPackageJson = {
-      name: repoName,
-      version: "1.0.0",
-      private: true,
-      workspaces: [
-        "backend",
-        "frontend"
-      ],
-      scripts: {
-        "install:all": "npm install --prefix backend && npm install --prefix frontend",
-        "dev:backend": "npm run dev --prefix backend",
-        "dev:frontend": "npm run dev --prefix frontend",
-        "build:frontend": "npm run build --prefix frontend",
-        "build:backend": "npm run build --prefix backend",
-        "build": "npm run build:frontend && npm run build:backend"
+  
+  switch (command) {
+    case 'list':
+      listSkills();
+      break;
+      
+    case 'info':
+      if (!args[1]) {
+        console.log('\n❌ Please specify a skill name. Example: npx skills-manager info fullstack-initializer\n');
+      } else {
+        showSkillInfo(args[1]);
       }
-    };
-    fs.writeFileSync(
-      path.join(targetParentDir, 'package.json'),
-      JSON.stringify(rootPackageJson, null, 2)
-    );
-
-    // Create Root .gitignore
-    const gitignoreContent = `
-node_modules/
-dist/
-backend/dist/
-backend/public/
-backend/logs/
-frontend/dist/
-.env
-.env.local
-*.db
-*.sqlite
-.DS_Store
-`;
-    fs.writeFileSync(path.join(targetParentDir, '.gitignore'), gitignoreContent.trim());
-
-    // Write a customized README that prompts the AI agent when it opens the repo
-    const welcomeReadme = `# ${repoName}
-
-Welcome to your new full-stack application!
-
-## Project Specifications (Saved in \`.agents/project-spec.json\`)
-- **Purpose:** ${spec.description}
-- **Frontend Design Style:** ${spec.designStyle}
-- **Database:** ${spec.database}
-
-## Getting Started
-1. Install all dependencies:
-   \`\`\`bash
-   npm run install:all
-   \`\`\`
-
-2. Run development servers:
-   - Backend: \`npm run dev:backend\`
-   - Frontend: \`npm run dev:frontend\`
-
-## Next Steps for the AI Agent
-When you (the Antigravity agent) read this file, perform the following actions:
-1. Parse the \`.agents/project-spec.json\` configuration.
-2. **Propose a list of required API Endpoints and Frontend Pages** based on the project purpose: "${spec.description}".
-3. Confirm the proposal with the user.
-4. Execute the \`fullstack-initializer\` skill to initialize the folders and write the files.
-`;
-
-    fs.writeFileSync(path.join(targetParentDir, 'README.md'), welcomeReadme);
-
-    // Try to run git init automatically
-    try {
-      execSync('git init', { cwd: targetParentDir, stdio: 'ignore' });
-      console.log('🗂️ Initialized a new Git repository.');
-    } catch (e) {
-      // Git is probably not installed, skip silently
-    }
-
-    console.log(`
-✅ Success! Your project workspace "${repoName}" is initialized.
-👉 Open this folder in Antigravity IDE or terminal.
-🤖 The AI Assistant will read the workspace and automatically propose the API and Page configurations!
-`);
-
-  } catch (error) {
-    console.error(`❌ Failed to initialize workspace:`, error.message);
-    process.exit(1);
+      break;
+      
+    case 'install':
+      if (!args[1]) {
+        console.log('\n❌ Please specify a skill name. Example: npx skills-manager install fullstack-initializer\n');
+      } else {
+        const targetDir = args[2] || process.cwd();
+        await installSkill(args[1], targetDir);
+      }
+      break;
+      
+    default:
+      console.log(`\n❌ Unknown command: ${command}\n`);
+      showHelp();
   }
+  
+  rl.close();
 }
 
 main();

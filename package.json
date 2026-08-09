@@ -1,27 +1,23 @@
 {
-  "name": "fullstack-initializer",
+  "name": "famdev-skills",
   "version": "1.0.0",
-  "description": "AI Skill for initializing production-ready Fullstack Applications (React + Vite + Express + TypeScript)",
-  "main": "SKILL.md",
+  "description": "A collection of AI skills for FamDev projects",
+  "main": "bin/cli.js",
   "bin": {
-    "fullstack-initializer": "./bin/cli.js",
-    "fullstack-init": "./bin/cli.js"
+    "skills": "./bin/cli.js",
+    "famdev-skills": "./bin/cli.js"
   },
   "scripts": {
     "start": "node bin/cli.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "list": "node bin/cli.js list",
+    "test": "node bin/cli.js list && node bin/cli.js info fullstack-initializer"
   },
   "keywords": [
-    "ai-skill",
-    "agent-skill",
+    "ai-skills",
+    "agent-skills",
     "fullstack",
-    "express",
-    "react",
-    "vite",
-    "typescript",
-    "mui",
-    "jwt",
-    "docker"
+    "famdev",
+    "initialize"
   ],
   "author": "FamDev",
   "license": "MIT",
@@ -33,8 +29,6 @@
     "node": ">=14.0.0"
   },
   "files": [
-    "SKILL.md",
-    "README.md",
     "bin/",
     "skills/"
   ]
