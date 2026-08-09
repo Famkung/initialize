@@ -371,6 +371,84 @@ Select option [1-2]:
 
 Only after user confirms, proceed to generate all files.
 
+### Step 8: Verify Build and Run (MUST DO before marking as done)
+
+After generating all files, you MUST verify that both backend and frontend compile and run successfully before marking the skill as complete.
+
+#### 8.1 Verify Backend
+
+```bash
+cd backend
+npm install
+npm run build
+```
+
+If build fails:
+- Check TypeScript errors and fix them
+- Verify all imports are correct
+- Fix any missing dependencies
+
+#### 8.2 Verify Frontend
+
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+If build fails:
+- Check TypeScript errors and fix them
+- Verify all imports are correct
+- Fix any missing dependencies
+
+#### 8.3 Run Dev Server (Optional but Recommended)
+
+```bash
+# Terminal 1 - Backend
+cd backend
+npm run dev
+
+# Terminal 2 - Frontend
+cd frontend
+npm run dev
+```
+
+Verify:
+- Backend starts on port 5000 without errors
+- Frontend starts on port 3000 without errors
+- Frontend can proxy API requests to backend
+
+#### 8.4 Show Final Success Message
+
+Only after all builds pass, show:
+
+```
+════════════════════════════════════════════════════════════
+✅ PROJECT GENERATED AND VERIFIED SUCCESSFULLY!
+════════════════════════════════════════════════════════════
+
+📁 Project: [project-name]
+📂 Location: [full-path]
+
+🚀 Quick Start Commands:
+
+  Backend:
+    cd backend
+    cp .env.example .env   # Configure your env vars
+    npm run dev             # Start dev server
+
+  Frontend:
+    cd frontend
+    npm run dev             # Start dev server
+
+📖 API Docs: http://localhost:5000/api-docs
+🌐 Frontend: http://localhost:3000
+
+════════════════════════════════════════════════════════════
+```
+
+**IMPORTANT:** If build verification fails, DO NOT mark the skill as done. Fix the errors first, then re-run verification.
+
 ---
 
 ## 🛠️ 2. TECH STACK OVERVIEW
