@@ -1333,45 +1333,7 @@ ENV NODE_ENV=production
 CMD ["npm", "run", "start"]
 ```
 
-### D. Docker Compose (`/docker-compose.yml`)
-```yaml
-version: '3.8'
-
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: ${APP_NAME:-fullstack-app}
-    restart: unless-stopped
-    ports:
-      - "${PORT:-5000}:5000"
-    environment:
-      - NODE_ENV=production
-      - PORT=5000
-      - JWT_SECRET=${JWT_SECRET}
-      - DB_DIALECT=${DB_DIALECT:-sqlite}
-      - DB_HOST=${DB_HOST:-}
-      - DB_PORT=${DB_PORT:-}
-      - DB_NAME=${DB_NAME:-}
-      - DB_USER=${DB_USER:-}
-      - DB_PASS=${DB_PASS:-}
-      - DB_STORAGE=${DB_STORAGE:-./database.sqlite}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
-    volumes:
-      - app-data:/app/backend/database.sqlite
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api-docs"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-volumes:
-  app-data:
-```
-
-### E. Environment Variable Template (`backend/.env.example`)
+### D. Environment Variable Template (`backend/.env.example`)
 ```ini
 PORT=5000
 NODE_ENV=development
